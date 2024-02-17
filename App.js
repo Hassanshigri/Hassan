@@ -1,9 +1,39 @@
 import React from 'react';
-import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native';
+import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, ImageBackground, Image } from 'react-native';
 import * as speech from 'expo-speech';
 
 export default function App() {
   const alphabetArray = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+  
+  const images = {
+    A: require('./assets/A.png'),
+    B: require('./assets/B.png'),
+    C: require('./assets/C.png'),
+    D: require('./assets/D.png'),
+    E: require('./assets/E.png'),
+    F: require('./assets/F.png'),
+    G: require('./assets/G.png'),
+    H: require('./assets/H.png'),
+    I: require('./assets/I.png'),
+    J: require('./assets/J.png'),
+    K: require('./assets/K.png'),
+    L: require('./assets/L.png'),
+    M: require('./assets/M.png'),
+    N: require('./assets/N.png'),
+    O: require('./assets/O.png'),
+    P: require('./assets/P.png'),
+    Q: require('./assets/Q.png'),
+    R: require('./assets/R.png'),
+    S: require('./assets/S.png'),
+    T: require('./assets/T.jpg'),
+    U: require('./assets/U.png'),
+    V: require('./assets/V.png'),
+    W: require('./assets/W.png'),
+    X: require('./assets/X.png'),
+    Y: require('./assets/Y.png'),
+    Z: require('./assets/Z.png'),             
+    // Add paths for other letters as needed
+  };
   
   const speakAlphabet = (prop) => {
     speech.speak(prop);
@@ -15,6 +45,9 @@ export default function App() {
         <View style={styles.gridContainer}>
           {alphabetArray.map((item) => (
             <TouchableOpacity key={item} style={styles.button} onPress={() => speakAlphabet(item)}>
+              <TouchableOpacity onPress={() => speakAlphabet(item)}>
+                <Image source={images[item]} style={styles.buttonImage} />
+              </TouchableOpacity>
               <Text style={styles.buttonText}>{item}</Text>
             </TouchableOpacity>
           ))}
@@ -44,13 +77,16 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   button: {
-    backgroundColor: 'rgba(250, 240, 250, 0.7)', // Transparent white color
-    width: '20%',
-    aspectRatio: 1,
     justifyContent: 'center',
     alignItems: 'center',
     margin: '1%',
     borderRadius: 100, // Change this value to adjust the roundness of the button
+    backgroundColor: 'rgba(250, 240, 250, 0.7)', // Transparent white color
+  },
+  buttonImage: {
+    width: 70,
+    height: 70,
+    resizeMode: 'contain',
   },
   buttonText: {
     fontSize: 18,
@@ -58,4 +94,3 @@ const styles = StyleSheet.create({
     color: 'black',
   },
 });
-
