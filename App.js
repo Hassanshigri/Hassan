@@ -1,8 +1,32 @@
 import React from 'react';
 import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, ImageBackground, Image } from 'react-native';
 import * as speech from 'expo-speech';
+import {Audio} from 'expo-av';
+import { useEffect, useState } from 'react';
+
+
 
 export default function App() {
+
+  const [sound, setSound] = useState();
+
+  async function playSound() {
+    const { sound } = await Audio.Sound.createAsync( require('./assets/a-av.mpeg')
+    );
+    setSound(sound);
+    await sound.playAsync();
+  }
+
+  useEffect(() => {
+    return sound
+      ? () => {
+          sound.unloadAsync();
+        }
+      : undefined;
+  }, [sound]);
+
+
+
   const alphabetArray = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
   
   const images = {
@@ -44,11 +68,13 @@ export default function App() {
       <SafeAreaView style={styles.container}>
         <View style={styles.gridContainer}>
           {alphabetArray.map((item) => (
-            <TouchableOpacity key={item} style={styles.button} onPress={() => speakAlphabet(item)}>
-              <TouchableOpacity onPress={() => speakAlphabet(item)}>
+            <TouchableOpacity key={item} style={styles.button} onPress={() =>{
+              speakAlphabet(item);
+              playSound();
+
+            }}>
                 <Image source={images[item]} style={styles.buttonImage} />
-              </TouchableOpacity>
-              <Text style={styles.buttonText}>{item}</Text>
+                <Text style={styles.buttonText}>{item}</Text>
             </TouchableOpacity>
           ))}
         </View>
