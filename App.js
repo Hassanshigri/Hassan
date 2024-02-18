@@ -1,21 +1,40 @@
 import React from 'react';
-import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, ImageBackground, Image } from 'react-native';
+import {
+  View,
+  Text,
+  SafeAreaView,
+  StyleSheet,
+  TouchableOpacity,
+  ImageBackground,
+  Image,
+  Button,
+} from 'react-native';
 import * as speech from 'expo-speech';
-import {Audio} from 'expo-av';
+import { Audio } from 'expo-av';
 import { useEffect, useState } from 'react';
-
-
+import { Video, ResizeMode } from 'expo-av';
 
 export default function App() {
-
   const [sound, setSound] = useState();
-
+  const video = React.useRef(null);
+  const [status, setStatus] = React.useState({});
+  const [showABC, setShowABC] = useState(true);
+  const [showVideo, setShowVideo] = useState(false);
   async function playSound() {
-    const { sound } = await Audio.Sound.createAsync( require('./assets/a-av.mpeg')
+    const { sound } = await Audio.Sound.createAsync(
+      require('./assets/a-av.mpeg')
     );
     setSound(sound);
     await sound.playAsync();
   }
+  async function stopSound() {
+    await sound.stopAsync();
+  }
+
+  async function pauseSound(){
+    await sound.pauseAsync();
+  }
+
 
   useEffect(() => {
     return sound
@@ -25,10 +44,35 @@ export default function App() {
       : undefined;
   }, [sound]);
 
+  const alphabetArray = [
+    'A',
+    'B',
+    'C',
+    'D',
+    'E',
+    'F',
+    'G',
+    'H',
+    'I',
+    'J',
+    'K',
+    'L',
+    'M',
+    'N',
+    'O',
+    'P',
+    'Q',
+    'R',
+    'S',
+    'T',
+    'U',
+    'V',
+    'W',
+    'X',
+    'Y',
+    'Z',
+  ];
 
-
-  const alphabetArray = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-  
   const images = {
     A: require('./assets/A.png'),
     B: require('./assets/B.png'),
@@ -55,28 +99,71 @@ export default function App() {
     W: require('./assets/W.png'),
     X: require('./assets/X.png'),
     Y: require('./assets/Y.png'),
-    Z: require('./assets/Z.png'),             
+    Z: require('./assets/Z.png'),
     // Add paths for other letters as needed
   };
-  
-  const speakAlphabet = (prop) => {
-    speech.speak(prop);
-  }
+
+  // const speakAlphabet = (prop) => {
+  //   speech.speak(prop);
+  // };
 
   return (
-    <ImageBackground source={require('./assets/3d-rendering-cute-teddy-bear-blue-background_994418-963.png')} style={styles.background}>
+    <ImageBackground
+      source={require('./assets/3d-rendering-cute-teddy-bear-blue-background_994418-963.png')}
+      style={styles.background}>
       <SafeAreaView style={styles.container}>
         <View style={styles.gridContainer}>
-          {alphabetArray.map((item) => (
-            <TouchableOpacity key={item} style={styles.button} onPress={() =>{
-              speakAlphabet(item);
-              playSound();
-
-            }}>
+          {showABC === true &&
+            alphabetArray.map((item) => (
+              <TouchableOpacity
+                key={item}
+                style={styles.button}
+                onPress={() => {
+                  // speakAlphabet(item);
+                  playSound();
+                  setShowABC(false);
+                  setShowVideo(true);
+                }}>
                 <Image source={images[item]} style={styles.buttonImage} />
                 <Text style={styles.buttonText}>{item}</Text>
-            </TouchableOpacity>
-          ))}
+              </TouchableOpacity>
+            ))}
+
+          {showVideo === true && (
+            <View>
+              <Video
+                ref={video}
+                style={styles.video}
+                source={{
+                  uri: 'https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4',
+                }}
+                useNativeControls
+                resizeMode={ResizeMode.CONTAIN}
+                isLooping
+                onPlaybackStatusUpdate={(status) => setStatus(() => status)}
+              />
+              <View style={styles.videoButtons}>
+                <Button
+                  title={status.isPlaying ? 'Pause' : 'Play'}
+                  onPress={() => {
+                    status.isPlaying
+                      ? video.current.pauseAsync()&&
+                      pauseSound()
+                      : video.current.playAsync() && playSound();
+                      //TODO: yaha pe video ke sath audio pause n play hona chahiye 
+                  }}
+                />
+                <Button
+                  title={'exit'}
+                  onPress={() => {
+                    video.current.stopAsync();
+                    stopSound();
+                    
+                  }}
+                />
+              </View>
+            </View>
+          )}
         </View>
       </SafeAreaView>
     </ImageBackground>
@@ -99,7 +186,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    alignItems: 'center', 
+    alignItems: 'center',
     width: '100%',
   },
   button: {
@@ -110,13 +197,28 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(250, 240, 250, 0.7)', // Transparent white color
   },
   buttonImage: {
-    width: 70,
-    height: 70,
+    width: 65,
+    height: 65,
     resizeMode: 'contain',
   },
   buttonText: {
     fontSize: 18,
     fontWeight: 'bold',
     color: 'black',
+  },
+  videoContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: '#ecf0f1',
+  },
+  video: {
+    alignSelf: 'center',
+    width: 320,
+    height: 200,
+  },
+  videoButtons: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
