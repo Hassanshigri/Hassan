@@ -14,36 +14,16 @@ import { Audio } from 'expo-av';
 import { useEffect, useState } from 'react';
 import { Video, ResizeMode } from 'expo-av';
 
-export default function App() {
-  const [sound, setSound] = useState();
-  const video = React.useRef(null);
-  const [status, setStatus] = React.useState({});
-  const [showABC, setShowABC] = useState(true);
-  const [showVideo, setShowVideo] = useState(false);
-  async function playSound() {
-    const { sound } = await Audio.Sound.createAsync(
-      require('./assets/a-av.mpeg')
-    );
-    setSound(sound);
-    await sound.playAsync();
-  }
-  async function stopSound() {
-    await sound.stopAsync();
-  }
-
-  async function pauseSound(){
-    await sound.pauseAsync();
-  }
-
-
-  useEffect(() => {
-    return sound
-      ? () => {
-          sound.unloadAsync();
-        }
-      : undefined;
-  }, [sound]);
-
+  const videoPath = {
+    A: require('./assets/a.mp4'),
+    B: require('./assets/b.mp4'),
+    C: require('./assets/c.mp4'),
+    D: require('./assets/d.mp4'),
+    E: require('./assets/e.mp4'),
+    F: require('./assets/f.mp4'),
+    G: require('./assets/g.mp4'),
+    H: require('./assets/h.mp4'),
+  };
   const alphabetArray = [
     'A',
     'B',
@@ -72,7 +52,7 @@ export default function App() {
     'Y',
     'Z',
   ];
-
+ //alert(alphabetArray[0])
   const images = {
     A: require('./assets/A.png'),
     B: require('./assets/B.png'),
@@ -103,6 +83,76 @@ export default function App() {
     // Add paths for other letters as needed
   };
 
+
+export default function App() {
+  const [sound, setSound] = useState();
+  const video = React.useRef(null);
+  const [status, setStatus] = React.useState({});
+  const [showABC, setShowABC] = useState(true);
+  const [showVideo, setShowVideo] = useState(false);
+  const [videoToPlay, setVideoToPlay] = useState(videoPath.B);
+  const [noOfFamMembers, setNoOfFamMembers] = useState(7)
+
+
+  async function playSongAndVideo() {
+    const { sound } = await Audio.Sound.createAsync(
+      require('./assets/a-av.mpeg')
+    );
+    setSound(sound);
+    await sound.playAsync();
+  }
+  
+  async function stopSound() {
+    await sound.stopAsync();
+  }
+
+  async function pauseSound() {
+    await sound.pauseAsync();
+  }
+
+  useEffect(() => {
+    return sound
+      ? () => {
+          sound.unloadAsync();
+        }
+      : undefined;
+  }, [sound]);
+
+
+
+
+  //TODO : Task 1 define JS Object
+
+  const familyObject = {
+    Abu: {nam: "Ashraf",age: 59,child:['amin','hassan','ali']},
+    Ami: {nam:'sara',age:49},
+    Bhai: {nam:'amin',age:21},
+    Bhaji: {nam:'anis',age:31}
+  };
+  //alert(familyObject.Abu.age)
+  //alert(familyObjet.Abu.child[2])
+  // const mykey="Bhaji"
+  // alert(familyObject[mykey].name)  
+  const familyArray =[
+    {name:"Ashraf",age: 59},
+    "Sara",
+    "Amin",
+    "Anis"
+  ];
+  //alert(familyArray[1])
+  //alert(familyArray[0].age)
+  const familyAge =[
+    59,49,21,31
+  ];
+  //
+  const familyObjAge ={
+    babaAge: 59,
+    mamaAge: 49
+  };
+  // alert(family.Abu);
+  // alert(family.Ami);
+  // alert(family.Ami);
+  // alert(family.Bhaji);
   // const speakAlphabet = (prop) => {
   //   speech.speak(prop);
   // };
@@ -120,9 +170,12 @@ export default function App() {
                 style={styles.button}
                 onPress={() => {
                   // speakAlphabet(item);
-                  playSound();
                   setShowABC(false);
+                  //jis alphabet p click hwa hy oska video play krna hy
+                  alert(item)
+                  setVideoToPlay(videoPath[item]);
                   setShowVideo(true);
+                  playSongAndVideo();
                 }}>
                 <Image source={images[item]} style={styles.buttonImage} />
                 <Text style={styles.buttonText}>{item}</Text>
@@ -130,13 +183,11 @@ export default function App() {
             ))}
 
           {showVideo === true && (
-            <View>
+            <View style={styles.videoContainer}>
               <Video
                 ref={video}
                 style={styles.video}
-                source={{
-                  uri: 'https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4',
-                }}
+                source={videoToPlay} 
                 useNativeControls
                 resizeMode={ResizeMode.CONTAIN}
                 isLooping
@@ -147,10 +198,9 @@ export default function App() {
                   title={status.isPlaying ? 'Pause' : 'Play'}
                   onPress={() => {
                     status.isPlaying
-                      ? video.current.pauseAsync()&&
-                      pauseSound()
-                      : video.current.playAsync() && playSound();
-                      //TODO: yaha pe video ke sath audio pause n play hona chahiye 
+                      ? video.current.pauseAsync() && pauseSound()
+                      : video.current.playAsync() && playSongAndVideo();
+                    //TODO: yaha pe video ke sath audio pause n play hona chahiye
                   }}
                 />
                 <Button
@@ -158,7 +208,8 @@ export default function App() {
                   onPress={() => {
                     video.current.stopAsync();
                     stopSound();
-                    
+                    setShowABC(true);
+                    setShowVideo(false);
                   }}
                 />
               </View>
@@ -209,12 +260,12 @@ const styles = StyleSheet.create({
   videoContainer: {
     flex: 1,
     justifyContent: 'center',
-    backgroundColor: '#ecf0f1',
   },
   video: {
     alignSelf: 'center',
-    width: 320,
-    height: 200,
+    width: 425,
+    height: 500,
+    justifyContent: 'center',
   },
   videoButtons: {
     flexDirection: 'row',
