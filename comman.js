@@ -92,7 +92,7 @@ export const audioPath = {
     C: require('./assets/audio/c.mp3'),
     D: require('./assets/audio/d.mp3'),
     E: require('./assets/audio/e.mp3'),
-    F: require('./assets/audio/fr.mp3'),
+    F: require('./assets/audio/f.mp3'),
     G: require('./assets/audio/g.mp3'),
     H: require('./assets/audio/h.mp3'),
     I: require('./assets/audio/i.mp3'),
