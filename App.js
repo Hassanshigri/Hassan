@@ -8,6 +8,7 @@ import {
   ImageBackground,
   Image,
   Dimensions,
+  ActivityIndicator,
 } from 'react-native';
 import { Video, ResizeMode, Audio } from 'expo-av';
 import { alphabetArray, images, videoPath, audioPath } from './comman';
@@ -18,6 +19,8 @@ export default function App() {
   const [status, setStatus] = useState({});
   const [showABC, setShowABC] = useState(true);
   const [videoToPlay, setVideoToPlay] = useState(videoPath.A);
+  const [isLoading, setIsLoading] = useState(false);
+  const [currentAlphabet, setCurrentAlphabet] = useState('xx');
 
   async function playSongAndVideo(audioPath) {
     if (sound) {
@@ -55,9 +58,12 @@ alphabetArray.map
                 key={item}
                 style={styles.button}
                 onPress={async () => {
+                  setIsLoading(true);
                   setShowABC(false);
                   setVideoToPlay(videoPath[item]);
+                  setCurrentAlphabet(item)
                   await playSongAndVideo(audioPath[item]);
+                  setIsLoading(false);
                 }}>
                 <Image source={images[item]} style={styles.buttonImage} />
                 <Text style={styles.buttonText}>{item}</Text>
@@ -72,11 +78,23 @@ styles.video
 }
                 source={videoToPlay}
                 useNativeControls
-                resizeMode={ResizeMode.CONTAIN}
                 isLooping
                 onPlaybackStatusUpdate={(status) => setStatus(status)}
                 shouldPlay
+                resizeMode="contain"
+                onLoad={() => setIsLoading(false)}
               />
+              {isLoading && (
+                <View style={styles.loadingContainer}>
+                  <ActivityIndicator size="large" color="#0000ff" />
+                </View>
+              )}
+              {!isLoading && (
+                <View style={[styles.loadingContainer, {alignContent: "top"}]}>
+                  <Text style={styles.currentAlphabet}>{currentAlphabet}</Text>
+                </View>
+              )}
+
               <TouchableOpacity
                 style={styles.exitButton}
                 onPress={() => {
@@ -152,5 +170,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: 'black',
+  },
+    currentAlphabet: {
+  fontSize: 32,
+  fontWeight: 'bold',
+  color: 'white', // Change the color to white for visibility
+  backgroundColor: 'rgba(0, 0, 0, 0.5)', // Add a semi-transparent background for better contrast
+  padding: 10, // Add padding for better readability
+  borderRadius: 5, // Add border radius for rounded corners
+    zIndex: 2, // Ensure it's above the video
+
+  },
+  loadingContainer: {
+    ...StyleSheet.absoluteFillObject,
+    // backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1, // Ensure it's above the video
   },
 }); 
