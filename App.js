@@ -41,11 +41,11 @@ export default function App() {
   }
 
   useEffect(() => {
-    return () => {
-      if (sound instanceof Audio.Sound) {
-        sound.unloadAsync();
-      }
-    };
+    return sound
+      ? () => {
+          sound.unloadAsync();
+        }
+      : undefined;
   }, [sound]);
 
   const toggleFullscreen = async () => {
@@ -111,6 +111,7 @@ export default function App() {
                 <Button
                   title={'Toggle Full Screen'}
                   onPress={toggleFullscreen}
+
                 />
               </View>
             </View>
