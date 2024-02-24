@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -7,26 +7,23 @@ import {
   TouchableOpacity,
   ImageBackground,
   Image,
-  Button,
   Dimensions,
 } from 'react-native';
-import * as speech from 'expo-speech';
-import { Audio } from 'expo-av';
-import { useEffect, useState } from 'react';
-import { Video, ResizeMode } from 'expo-av';
+import { Video, ResizeMode, Audio } from 'expo-av';
 import { alphabetArray, images, videoPath, audioPath } from './comman';
 
-
-
 export default function App() {
-  const [sound, setSound] = useState(audioPath.A);
-  const video = React.useRef(null);
-  const [status, setStatus] = React.useState({});
+  const [sound, setSound] = useState(null);
+  const video = useRef(null);
+  const [status, setStatus] = useState({});
   const [showABC, setShowABC] = useState(true);
   const [videoToPlay, setVideoToPlay] = useState(videoPath.A);
 
-
   async function playSongAndVideo(audioPath) {
+    if (sound) {
+      await sound.unloadAsync();
+    }
+
     const { sound } = await Audio.Sound.createAsync(audioPath);
     setSound(sound);
     await sound.playAsync();
@@ -36,84 +33,59 @@ export default function App() {
     await sound.stopAsync();
   }
 
-  async function pauseSound() {
-    await sound.pauseAsync();
-  }
-
   useEffect(() => {
-    return sound
-      ? () => {
-          sound.unloadAsync();
-        }
-      : undefined;
+    return () => {
+      if (sound) {
+        sound.unloadAsync();
+      }
+    };
   }, [sound]);
-
-  const toggleFullscreen = async () => {
-    await video.current.presentFullscreenPlayer();
-  };
 
   return (
     <ImageBackground
       source={require('./assets/3d-rendering-cute-teddy-bear-blue-background_994418-963.png')}
       style={styles.background}>
       <SafeAreaView style={styles.container}>
-
         <View style={styles.gridContainer}>
           {showABC === true &&
-            alphabetArray.map((item) => (
+            
+alphabetArray.map
+((item) => (
               <TouchableOpacity
                 key={item}
                 style={styles.button}
-                onPress={() => {
+                onPress={async () => {
                   setShowABC(false);
                   setVideoToPlay(videoPath[item]);
-                  playSongAndVideo(audioPath[item]);
+                  await playSongAndVideo(audioPath[item]);
                 }}>
                 <Image source={images[item]} style={styles.buttonImage} />
                 <Text style={styles.buttonText}>{item}</Text>
               </TouchableOpacity>
             ))}
-
           {showABC === false && (
             <View style={styles.videoContainer}>
               <Video
                 ref={video}
-                style={styles.video}
+                style={
+styles.video
+}
                 source={videoToPlay}
                 useNativeControls
                 resizeMode={ResizeMode.CONTAIN}
                 isLooping
-                onPlaybackStatusUpdate={(status) => setStatus(() => status)}
+                onPlaybackStatusUpdate={(status) => setStatus(status)}
+                shouldPlay
               />
-              <View style={styles.videoButtons}>
-                <Button
-                  title={status.isPlaying ? 'Pause' : 'Play'}
-                  onPress={() => {
-                    status.isPlaying
-                      ? video.current.pauseAsync() && pauseSound()
-                      : video.current.playAsync() && sound.playAsync();
-                  }}
-                />
-                <Button
-                  title={'exit'}
-                  onPress={() => {
-                    video.current.stopAsync();
-                    stopSound();
-                    setShowABC(true);
-                  }}
-                />
-                <Button
-                  title={'Exit Full Screen'}
-                  onPress={() => {
-                    video.current.dismissFullscreenPlayer();
-                  }}
-                />
-                <Button
-                  title={'Toggle Full Screen'}
-                  onPress={toggleFullscreen}
-
-                />
-              </View>
+              <TouchableOpacity
+                style={styles.exitButton}
+                onPress={() => {
+                  video.current.dismissFullscreenPlayer(); // Dismiss fullscreen player
+                  setShowABC(true); // Show ABC buttons
+                  stopSound();
+                }}>
+                <Text style={styles.exitButtonText}>Exit</Text>
+              </TouchableOpacity>
             </View>
           )}
         </View>
@@ -161,14 +133,24 @@ const styles = StyleSheet.create({
   videoContainer: {
     flex: 1,
     justifyContent: 'center',
+    position: 'relative',
   },
   video: {
-    width: Dimensions.get('window').width, 
-    height: Dimensions.get('window').height, 
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height,
   },
-  videoButtons: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+  exitButton: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    padding: 10,
+    borderRadius: 5,
+    zIndex: 1, // Ensure it's above the video
   },
-});
+  exitButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'black',
+  },
+}); 
