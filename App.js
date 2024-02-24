@@ -8,12 +8,13 @@ import {
   ImageBackground,
   Image,
   Button,
+  Dimensions,
 } from 'react-native';
 import * as speech from 'expo-speech';
 import { Audio } from 'expo-av';
 import { useEffect, useState } from 'react';
 import { Video, ResizeMode } from 'expo-av';
-import { alphabetArray,images, videoPath,audioPath } from './comman';
+import { alphabetArray, images, videoPath, audioPath } from './comman';
 
 
 
@@ -39,20 +40,24 @@ export default function App() {
     await sound.pauseAsync();
   }
 
-  // useEffect(() => {
-  //   return sound
-  //     ? () => {
-  //         sound.unloadAsync();
-  //       }
-  //     : undefined;
-  // }, [sound]);
+  useEffect(() => {
+    return () => {
+      if (sound instanceof Audio.Sound) {
+        sound.unloadAsync();
+      }
+    };
+  }, [sound]);
+
+  const toggleFullscreen = async () => {
+    await video.current.presentFullscreenPlayer();
+  };
 
   return (
     <ImageBackground
       source={require('./assets/3d-rendering-cute-teddy-bear-blue-background_994418-963.png')}
       style={styles.background}>
       <SafeAreaView style={styles.container}>
-     
+
         <View style={styles.gridContainer}>
           {showABC === true &&
             alphabetArray.map((item) => (
@@ -86,7 +91,7 @@ export default function App() {
                   onPress={() => {
                     status.isPlaying
                       ? video.current.pauseAsync() && pauseSound()
-                      : video.current.playAsync() && playSongAndVideo();
+                      : video.current.playAsync() && sound.playAsync();
                   }}
                 />
                 <Button
@@ -96,6 +101,16 @@ export default function App() {
                     stopSound();
                     setShowABC(true);
                   }}
+                />
+                <Button
+                  title={'Exit Full Screen'}
+                  onPress={() => {
+                    video.current.dismissFullscreenPlayer();
+                  }}
+                />
+                <Button
+                  title={'Toggle Full Screen'}
+                  onPress={toggleFullscreen}
                 />
               </View>
             </View>
@@ -130,7 +145,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     margin: '1%',
     borderRadius: 100,
-    backgroundColor: 'rgba(250, 240, 250, 0.7)', 
+    backgroundColor: 'rgba(250, 240, 250, 0.7)',
   },
   buttonImage: {
     width: 65,
@@ -147,10 +162,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   video: {
-    alignSelf: 'center',
-    width: 425,
-    height: 500,
-    justifyContent: 'center',
+    width: Dimensions.get('window').width, 
+    height: Dimensions.get('window').height, 
   },
   videoButtons: {
     flexDirection: 'row',
