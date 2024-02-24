@@ -51,9 +51,7 @@ export default function App() {
       <SafeAreaView style={styles.container}>
         <View style={styles.gridContainer}>
           {showABC === true &&
-            
-alphabetArray.map
-((item) => (
+            alphabetArray.map((item) => (
               <TouchableOpacity
                 key={item}
                 style={styles.button}
@@ -61,7 +59,7 @@ alphabetArray.map
                   setIsLoading(true);
                   setShowABC(false);
                   setVideoToPlay(videoPath[item]);
-                  setCurrentAlphabet(item)
+                  setCurrentAlphabet(item);
                   await playSongAndVideo(audioPath[item]);
                   setIsLoading(false);
                 }}>
@@ -73,9 +71,7 @@ alphabetArray.map
             <View style={styles.videoContainer}>
               <Video
                 ref={video}
-                style={
-styles.video
-}
+                style={styles.video}
                 source={videoToPlay}
                 useNativeControls
                 isLooping
@@ -90,7 +86,8 @@ styles.video
                 </View>
               )}
               {!isLoading && (
-                <View style={[styles.loadingContainer, {alignContent: "top"}]}>
+                <View
+                  style={[styles.loadingContainer, { alignContent: 'top' }]}>
                   <Text style={styles.currentAlphabet}>{currentAlphabet}</Text>
                 </View>
               )}
@@ -171,16 +168,18 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'black',
   },
-    currentAlphabet: {
+  currentAlphabet: {
+  position: 'absolute',
+  top: 10, 
+  alignSelf: 'center', 
   fontSize: 32,
   fontWeight: 'bold',
-  color: 'white', // Change the color to white for visibility
-  backgroundColor: 'rgba(0, 0, 0, 0.5)', // Add a semi-transparent background for better contrast
-  padding: 10, // Add padding for better readability
-  borderRadius: 5, // Add border radius for rounded corners
-    zIndex: 2, // Ensure it's above the video
-
-  },
+  color: 'white',
+  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  padding: 10,
+  borderRadius: 5,
+  zIndex: 2,
+},
   loadingContainer: {
     ...StyleSheet.absoluteFillObject,
     // backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -188,4 +187,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     zIndex: 1, // Ensure it's above the video
   },
-}); 
+});
