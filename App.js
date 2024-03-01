@@ -62,6 +62,7 @@ export default function App() {
                   setCurrentAlphabet(item);
                   await playSongAndVideo(audioPath[item]);
                   setIsLoading(false);
+                  video.current.presentFullscreenPlayer();
                 }}>
                 <Image source={images[item]} style={styles.buttonImage} />
                 <Text style={styles.buttonText}>{item}</Text>
@@ -169,17 +170,14 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   currentAlphabet: {
-  position: 'absolute',
-  top: 10, 
-  alignSelf: 'center', 
-  fontSize: 32,
-  fontWeight: 'bold',
-  color: 'white',
-  backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  padding: 10,
-  borderRadius: 5,
-  zIndex: 2,
-},
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: 'white', // Change the color to white for visibility
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Add a semi-transparent background for better contrast
+    padding: 10, // Add padding for better readability
+    borderRadius: 5, // Add border radius for rounded corners
+    zIndex: 2, // Ensure it's above the video
+  },
   loadingContainer: {
     ...StyleSheet.absoluteFillObject,
     // backgroundColor: 'rgba(0, 0, 0, 0.5)',
