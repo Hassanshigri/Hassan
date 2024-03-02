@@ -20,7 +20,6 @@ export default function App() {
   const [showABC, setShowABC] = useState(true);
   const [videoToPlay, setVideoToPlay] = useState(videoPath.A);
   const [isLoading, setIsLoading] = useState(false);
-  const [currentAlphabet, setCurrentAlphabet] = useState('xx');
 
   async function playSongAndVideo(audioPath) {
     if (sound) {
@@ -59,10 +58,9 @@ export default function App() {
                   setIsLoading(true);
                   setShowABC(false);
                   setVideoToPlay(videoPath[item]);
-                  setCurrentAlphabet(item);
                   await playSongAndVideo(audioPath[item]);
                   setIsLoading(false);
-                  video.current.presentFullscreenPlayer();
+                  // video.current.presentFullscreenPlayer();
                 }}>
                 <Image source={images[item]} style={styles.buttonImage} />
                 <Text style={styles.buttonText}>{item}</Text>
@@ -86,12 +84,7 @@ export default function App() {
                   <ActivityIndicator size="large" color="#0000ff" />
                 </View>
               )}
-              {!isLoading && (
-                <View
-                  style={[styles.loadingContainer, { alignContent: 'top' }]}>
-                  <Text style={styles.currentAlphabet}>{currentAlphabet}</Text>
-                </View>
-              )}
+              
 
               <TouchableOpacity
                 style={styles.exitButton}
