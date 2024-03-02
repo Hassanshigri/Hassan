@@ -14,7 +14,8 @@
     "expo-speech": "~11.3.0",
     "@expo/vector-icons": "^13.0.0",
     "react-native-paper": "4.9.2",
-    "expo-av": "~13.4.1"
+    "expo-av": "~13.4.1",
+    "expo-dev-client": "~2.4.13"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
