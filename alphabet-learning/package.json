@@ -15,7 +15,9 @@
     "@expo/vector-icons": "^13.0.0",
     "react-native-paper": "4.9.2",
     "expo-av": "~13.4.1",
-    "expo-dev-client": "~2.4.13"
+    "expo-dev-client": "~2.4.13",
+    "expo-location": "~16.1.0",
+    "expo-updates": "~0.18.19"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
